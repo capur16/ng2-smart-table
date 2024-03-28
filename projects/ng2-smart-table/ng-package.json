@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/ng2-smart-table",
+  "dest": "../../dist/cr2-smart-table",
   "allowedNonPeerDependencies": [
     "lodash"
   ],
