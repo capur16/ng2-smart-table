@@ -1,6 +1,6 @@
 {
   "name": "cr2-smart-table",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "Angular Smart Table",
   "author": "akveo",
   "license": "MIT",
@@ -9,7 +9,7 @@
     "tslib": "^2.3.1"
   },
   "peerDependencies": {
-    "ng2-completer": "^9.0.1",
+    "ngx-completer": "^3.0.12",
     "@angular/common": "^15.2.10",
     "@angular/core": "^15.2.10",
     "@angular/forms": "^15.2.10"

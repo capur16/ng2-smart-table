@@ -1,6 +1,6 @@
-import {Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 
-import {FilterDefault} from "./filter-default";
+import { FilterDefault } from "./filter-default";
 
 @Component({
   selector: 'default-table-filter',
@@ -18,12 +18,6 @@ import {FilterDefault} from "./filter-default";
                        [column]="column"
                        (filter)="onFilter($event)">
       </checkbox-filter>
-      <completer-filter *ngSwitchCase="'completer'"
-                        [query]="query"
-                        [ngClass]="inputClass"
-                        [column]="column"
-                        (filter)="onFilter($event)">
-      </completer-filter>
       <input-filter *ngSwitchDefault
                     [query]="query"
                     [ngClass]="inputClass"
