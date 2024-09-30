@@ -14,7 +14,7 @@ export class FilterDefault {
 
   @Output() filter = new EventEmitter<any>();
 
-  query: string = '';
+  @Input() query: string = '';
 
   onFilter(query: string) {
     this.source.addFilter({

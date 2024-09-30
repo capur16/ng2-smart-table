@@ -28,5 +28,5 @@ import { FilterDefault } from "./filter-default";
   `,
 })
 export class DefaultFilterComponent extends FilterDefault {
-  @Input() query: string;
+  // @Input() query: string;
 }
