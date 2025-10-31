@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import { DefaultFilter } from './default-filter';
@@ -17,9 +17,7 @@ export class CheckboxFilterComponent extends DefaultFilter implements OnInit {
   filterActive: boolean = false;
   inputControl = new FormControl();
 
-  constructor() {
-    super();
-  }
+  constructor(elRef: ElementRef) { super(elRef); }
 
   ngOnInit() {
     this.changesSubscription = this.inputControl.valueChanges

@@ -1,6 +1,6 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, skip } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 import { DefaultFilter } from './default-filter';
 
@@ -12,35 +12,45 @@ import { DefaultFilter } from './default-filter';
       [formControl]="inputControl"
       class="form-control"
       type="text"
-      placeholder="{{ column.title }}"/>
+      [placeholder]="column.title"/>
   `,
 })
 export class InputFilterComponent extends DefaultFilter implements OnInit, OnChanges {
+  inputControl = new FormControl<string>('');
 
-  inputControl = new FormControl();
+  constructor(elRef: ElementRef) { super(elRef); }
 
-  constructor() {
-    super();
+  private isFocused(): boolean {
+    const el: HTMLInputElement | null = this.elRef.nativeElement.querySelector('input');
+    return !!el && document.activeElement === el;
   }
 
-  ngOnInit() {
-    if (this.query) {
-      this.inputControl.setValue(this.query);
+  ngOnInit(): void {
+    // seed iniziale senza generare eventi
+    if (this.query != null) {
+      this.inputControl.setValue(this.query, { emitEvent: false });
     }
-    this.inputControl.valueChanges
+
+    // ORDINE: debounce → distinct
+    this.changesSubscription = this.inputControl.valueChanges
       .pipe(
-        distinctUntilChanged(),
         debounceTime(this.delay),
+        distinctUntilChanged(),
       )
-      .subscribe((value: string) => {
-        this.query = this.inputControl.value;
+      .subscribe((value: string | null) => {
+        this.query = value ?? '';
         this.setFilter();
       });
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.query) {
-      this.inputControl.setValue(this.query);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['query']) {
+      const incoming = (changes['query'].currentValue ?? '') as string;
+      const current = this.inputControl.value ?? '';
+      // Evita di sovrascrivere durante la digitazione
+      if (incoming !== current && !this.isFocused()) {
+        this.inputControl.setValue(incoming, { emitEvent: false });
+      }
     }
   }
 }

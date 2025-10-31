@@ -1,39 +1,39 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgControl } from '@angular/forms';
-import { distinctUntilChanged, debounceTime, skip } from 'rxjs/operators';
+import { Component, ElementRef, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 import { DefaultFilter } from './default-filter';
 
 @Component({
   selector: 'select-filter',
   template: `
-    <select [ngClass]="inputClass"
-            class="form-control"
-            #inputControl
-            [(ngModel)]="query">
-
-        <option value="">{{ column.getFilterConfig().selectText }}</option>
-        <option *ngFor="let option of column.getFilterConfig().list" [value]="option.value">
-          {{ option.title }}
-        </option>
+    <select
+      [ngClass]="inputClass"
+      class="form-control"
+      [formControl]="inputControl">
+      <option value="">{{ column.getFilterConfig().selectText }}</option>
+      <option *ngFor="let option of column.getFilterConfig().list" [value]="option.value">
+        {{ option.title }}
+      </option>
     </select>
   `,
 })
 export class SelectFilterComponent extends DefaultFilter implements OnInit {
 
-  @ViewChild('inputControl', { read: NgControl, static: true }) inputControl: NgControl;
+  // Typed Forms: un solo "source of truth" (niente ngModel)
+  inputControl = new FormControl<string>('');
 
-  constructor() {
-    super();
+  constructor(elRef: ElementRef) {
+    // Il nuovo DefaultFilter usa ElementRef per gestire focus e sync sicuri
+    super(elRef);
   }
 
-  ngOnInit() {
-    this.inputControl.valueChanges
-      .pipe(
-        skip(1),
-        distinctUntilChanged(),
-        debounceTime(this.delay)
-      )
-      .subscribe((value: string) => this.setFilter());
+  ngOnInit(): void {
+    // seed iniziale senza generare eventi verso valueChanges
+    if (this.query != null) {
+      this.inputControl.setValue(this.query, { emitEvent: false });
+    }
+
+    // delega al base: debounce → distinct, setFilter(), gestione unsubscribe
+    this.bindControl();
   }
 }
